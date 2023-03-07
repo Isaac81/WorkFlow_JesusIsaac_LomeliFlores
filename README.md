@@ -21,77 +21,67 @@ Alumno: *Lomeli Flores Jesus Isaac*
 ### Desarrollo
 
 <p align="justify">
-Para el desarrollo de esta practica se utilizo el lenguaje de programación python en su versión 3.11 para implementar un código capaz de detectar el estado del puerto
-que utiliza la pagina realizada con React.js, cuyo código principal es el siguiente.
+Para el desarrollo de esta practica se utilizo el lenguaje de programación python en su versión 3.11. para simular la creación y ejecución de procesos. Lo primero que se realizo fue una función que marcara del flujo de trabajo utilizando el decorador flow.
 
 </p>
 
 
 ```py
-def verificar(ip, puerto):
-    try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(10)
-        status = sock.connect_ex((ip, puerto))
-        if status == 0:
-            print(f"Puerto: {port} - Abierto")
-        else:
-            print(f"Port: {port} - Cerrado")
-            os.system("npm run dev --port={puerto}")
-        sock.close()
-    except socket.error as err:
-        print(f"Connection error: {err}")    
-        sys.exit()
+@flow
+def main_flow():
+    p = create_process()
+    result = execute(p)
+    print(f"Process completed in {p['tme']} seconds. Result: {result}")
 ```
 
 
 <p align="justify">
-El servicio se debe ejecutar indefinidamente, por lo que se implemento dentro de un bucle sin fin dentro del punto de entrada del programa, lugar donde también se
-asignan los valores de los argumentos requeridos.
+El lo primero que hace el flujo es crear un proceso llamando a una función con el decorador task.
 </p>
 
 
 ```py
-if __name__ == '__main__':
-    ip_address = "192.168.1.75"
-    port = 5173
-    url = "D:/6to semestre/ComputacionToleranteFallos/Codigos/persistenciaDatos/"
-    
-    os.chdir(url)
-    while(True):
-        verificar(ip_address, port)
-        time.sleep(300)
+@task
+def create_process():
+    process  =  {
+        "num1": random.randint(0, 100),
+        "num2": random.randint(0, 100),
+        "tme": random.randint(1, 2)
+    }
+
+    return process
 ```
 
 
 <p align="justify">
-Para convertir el script realizado en un servicio se utilizo nssm.
+Posteriormente el flujo llama a otra tarea para ejecutar el proceso creado en la tarea anterior, en este caso una división.
 </p>
 
-![Creación del servicio con nssm](/imagenes/Screenshot_17.png)
+```py
+@task
+def execute(process):
+    result = process['num1'] / process['num2']
+    sleep(process['tme'])
+
+    return result
+```
 
 <p align="justify">
-Posteriormente se inicia el servicio utilizando una terminal con permisos de administrador.
+Debido a que los números son generados aleatoreamente y que el rango dado permite que alguno de los operandos sea un cero, puede ocurrir un error, pues se estaria tratando de dividir entre cero. Dicho error es capturado por prefect y mostrara el "modulo" que presento el error.
 </p>
 
-![Ejecución del servicio](/imagenes/Screenshot_18.png)
+![Ejecución del servicio](/Imagenes/Screenshot_26.png)
 
 <p align="justify">
-Una vez iniciado el servicio se comprueba su ejecución con ayuda del administrador de tareas de Windows.
+Si por el contrario, el programa se ejecuto correctamente finalizara el proceso mostrando las salidas de las diferentes tareas del flujo.
 </p>
 
-![Comprobar ejecución del servicio](/imagenes/Screenshot_19.png)
+![Comprobar ejecución del servicio](/Imagenes/Screenshot_25.png)
 
-
-<p align="justify">
-Posteriormente la ejecucion de Nodejs en los procesos del sistema.
-</p>
-
-### Conclusion
+### Conclusión
 
 <p align="justify">
-Se logró comprender la importancia de los servicios y como es que estos se implementan. Estos tipos de servicios encargados de revisar el estatus de un programa o aplicación
-resultan muy utiles si se necesita que dicha aplicación permanezca siempre activa como es el caso de algunas paginas gubernamentales.
+Se logró comprender la utilidad que tienen las herramientas cómo prefect para el desarrollo de aplicaciones mas seguras y de facil depuración, pues al mostrar exactamente en que parte de flujo del sistema ocurrio el error se ahorra tiempo al no tener que buscar la ubicación del problema y centrarse en la posible solución.
 </p>
 
 
